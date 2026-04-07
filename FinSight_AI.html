@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FinSight AI – Financial Document Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #0A84FF;
+      --primary-dark: #005FCC;
+      --accent: #00D4AA;
+      --dark: #0B0F1A;
+      --dark2: #111827;
+      --card: #161D2E;
+      --card2: #1E2A3F;
+      --border: rgba(255,255,255,0.08);
+      --text: #E2E8F0;
+      --muted: #8B9AB5;
+      --gold: #F59E0B;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family:'Inter',sans-serif; background:var(--dark); color:var(--text); overflow-x:hidden; }
+
+    nav {
+      position: fixed; top:0; width:100%; z-index:100;
+      background: rgba(11,15,26,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex; align-items:center; justify-content:space-between; height:64px;
+    }
+    .nav-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.2rem; color:#fff; }
+    .nav-logo .dot { width:8px; height:8px; background:var(--accent); border-radius:50%; }
+    .nav-links { display:flex; gap:32px; list-style:none; }
+    .nav-links a { color:var(--muted); text-decoration:none; font-size:.9rem; font-weight:500; transition:.2s; }
+    .nav-links a:hover { color:#fff; }
+
+    .hero {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      text-align:center; padding:120px 24px 80px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,132,255,.15) 0%, transparent 70%),
+                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,212,170,.08) 0%, transparent 60%),
+                  var(--dark);
+      position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero h1 {
+      font-size:clamp(2.2rem,6vw,4.2rem); font-weight:900; line-height:1.1;
+      color:#fff; margin-bottom:24px; letter-spacing:-1.5px;
+    }
+    .hero h1 span {
+      background:linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .hero p { max-width:640px; margin:0 auto 40px; color:var(--muted); font-size:1.1rem; line-height:1.8; }
+    .hero-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+    .btn-primary {
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+      color:#fff; padding:14px 32px; border-radius:10px; font-weight:700;
+      font-size:1rem; border:none; cursor:pointer; text-decoration:none;
+      display:inline-flex; align-items:center; gap:8px; transition:.25s;
+      box-shadow: 0 4px 24px rgba(10,132,255,.35);
+    }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(10,132,255,.5); }
+    .btn-outline {
+      background:transparent; color:#fff; padding:14px 32px; border-radius:10px;
+      font-weight:600; font-size:1rem; border:1px solid var(--border);
+      cursor:pointer; text-decoration:none; display:inline-flex; align-items:center;
+      gap:8px; transition:.25s;
+    }
+    .btn-outline:hover { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.2); }
+    .hero-stats {
+      display:flex; gap:48px; justify-content:center; margin-top:72px;
+      padding-top:48px; border-top:1px solid var(--border); flex-wrap:wrap;
+    }
+    .stat h3 { font-size:2rem; font-weight:800; color:#fff; }
+    .stat p { color:var(--muted); font-size:.85rem; margin-top:4px; }
+
+    section { padding:100px 24px; }
+    .container { max-width:1200px; margin:0 auto; }
+    .section-label {
+      text-transform:uppercase; font-size:.75rem; font-weight:700;
+      letter-spacing:2px; color:var(--accent); margin-bottom:12px;
+    }
+    .section-title {
+      font-size:clamp(1.8rem,4vw,2.8rem); font-weight:800; color:#fff;
+      letter-spacing:-1px; margin-bottom:16px; line-height:1.2;
+    }
+    .section-sub { color:var(--muted); font-size:1rem; line-height:1.8; max-width:600px; }
+
+    .features { background:var(--dark2); }
+    .features-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:24px; margin-top:60px;
+    }
+    .feature-card {
+      background:var(--card); border:1px solid var(--border); border-radius:16px;
+      padding:32px; transition:.3s; position:relative; overflow:hidden;
+    }
+    .feature-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,var(--primary),var(--accent));
+      opacity:0; transition:.3s;
+    }
+    .feature-card:hover { transform:translateY(-4px); border-color:rgba(10,132,255,.3); }
+    .feature-card:hover::before { opacity:1; }
+    .feature-icon {
+      width:52px; height:52px; border-radius:12px; display:flex;
+      align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:20px;
+    }
+    .feature-card h3 { font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:10px; }
+    .feature-card p { color:var(--muted); font-size:.9rem; line-height:1.7; }
+
+    .pipeline-steps {
+      display:flex; gap:0; margin-top:60px; flex-wrap:wrap; justify-content:center;
+    }
+    .step {
+      flex:1; min-width:160px; text-align:center; position:relative; padding:0 16px;
+    }
+    .step:not(:last-child)::after {
+      content:'→'; position:absolute; right:-12px; top:28px;
+      color:var(--primary); font-size:1.2rem; font-weight:700;
+    }
+    .step-num {
+      width:60px; height:60px; border-radius:50%;
+      background:linear-gradient(135deg,var(--primary),var(--accent));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:1.1rem; color:#fff; margin:0 auto 16px;
+      box-shadow:0 4px 20px rgba(10,132,255,.4);
+    }
+    .step h4 { font-weight:700; color:#fff; font-size:.95rem; margin-bottom:6px; }
+    .step p { color:var(--muted); font-size:.8rem; }
+
+    .api-section { background:var(--dark2); }
+    .api-tabs { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
+    .api-tab {
+      padding:8px 20px; border-radius:8px; border:1px solid var(--border);
+      background:transparent; color:var(--muted); font-size:.85rem; font-weight:600;
+      cursor:pointer; transition:.2s;
+    }
+    .api-tab.active, .api-tab:hover { background:var(--primary); color:#fff; border-color:var(--primary); }
+    .api-table { width:100%; border-collapse:collapse; border-radius:12px; overflow:hidden; }
+    .api-table th {
+      background:var(--card2); color:var(--muted); font-size:.8rem;
+      text-transform:uppercase; letter-spacing:1px; padding:14px 20px; text-align:left;
+    }
+    .api-table td { padding:14px 20px; border-bottom:1px solid var(--border); font-size:.9rem; }
+    .api-table tr:last-child td { border-bottom:none; }
+    .api-table tr:hover td { background:rgba(255,255,255,.02); }
+    .method {
+      display:inline-block; padding:3px 10px; border-radius:6px;
+      font-size:.75rem; font-weight:700; font-family:'JetBrains Mono',monospace;
+    }
+    .get { background:rgba(0,212,170,.15); color:var(--accent); }
+    .post { background:rgba(10,132,255,.15); color:var(--primary); }
+    .delete { background:rgba(239,68,68,.15); color:#EF4444; }
+    .endpoint { font-family:'JetBrains Mono',monospace; font-size:.82rem; color:#CBD5E1; }
+    .table-wrap { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+
+    .team-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:24px; margin-top:60px;
+    }
+    .team-card {
+      background:var(--card); border:1px solid var(--border); border-radius:20px;
+      padding:32px 24px; text-align:center; transition:.3s;
+    }
+    .team-card:hover { transform:translateY(-6px); box-shadow:0 20px 60px rgba(0,0,0,.3); border-color:rgba(10,132,255,.3); }
+    .avatar {
+      width:80px; height:80px; border-radius:50%; margin:0 auto 20px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.8rem; font-weight:800; color:#fff;
+      background:linear-gradient(135deg,var(--primary),var(--accent));
+      box-shadow:0 4px 20px rgba(10,132,255,.35);
+    }
+    .team-card h3 { font-size:1.05rem; font-weight:700; color:#fff; margin-bottom:6px; }
+    .team-role {
+      display:inline-block; background:rgba(10,132,255,.12); color:var(--primary);
+      border-radius:6px; padding:4px 12px; font-size:.75rem; font-weight:600; margin-bottom:16px;
+    }
+    .team-card p { color:var(--muted); font-size:.85rem; line-height:1.6; margin-bottom:20px; }
+    .skills-list { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+    .skill-tag {
+      background:rgba(255,255,255,.05); border:1px solid var(--border);
+      border-radius:6px; padding:3px 10px; font-size:.72rem; color:var(--muted);
+    }
+    .contrib-bar { margin-top:16px; background:rgba(255,255,255,.05); border-radius:50px; height:4px; }
+    .contrib-fill { height:4px; border-radius:50px; background:linear-gradient(90deg,var(--primary),var(--accent)); }
+
+    .roles-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:20px; margin-top:48px;
+    }
+    .role-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; }
+    .role-card h4 { font-size:1rem; font-weight:700; color:#fff; margin-bottom:4px; }
+    .role-badge { display:inline-block; border-radius:6px; padding:3px 12px; font-size:.72rem; font-weight:700; margin-bottom:16px; }
+    .admin .role-badge { background:rgba(239,68,68,.15); color:#EF4444; }
+    .analyst .role-badge { background:rgba(10,132,255,.15); color:var(--primary); }
+    .auditor .role-badge { background:rgba(245,158,11,.15); color:var(--gold); }
+    .client .role-badge { background:rgba(0,212,170,.15); color:var(--accent); }
+    .perm-list { list-style:none; }
+    .perm-list li {
+      display:flex; align-items:center; gap:8px; font-size:.85rem; color:var(--muted);
+      padding:6px 0; border-bottom:1px solid rgba(255,255,255,.04);
+    }
+    .perm-list li:last-child { border-bottom:none; }
+    .perm-list .check { color:var(--accent); font-weight:700; }
+    .perm-list .cross { color:#EF4444; }
+
+    .tech { background:var(--dark2); }
+    .tech-grid {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+      gap:16px; margin-top:48px;
+    }
+    .tech-card {
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:24px 20px; text-align:center; transition:.3s;
+    }
+    .tech-card:hover { border-color:var(--primary); transform:scale(1.03); }
+    .tech-card .tech-icon { font-size:2rem; margin-bottom:10px; }
+    .tech-card h4 { font-size:.9rem; font-weight:700; color:#fff; margin-bottom:4px; }
+    .tech-card p { font-size:.75rem; color:var(--muted); }
+
+    .cta-section {
+      background:linear-gradient(135deg,rgba(10,132,255,.15),rgba(0,212,170,.08));
+      border-top:1px solid var(--border); border-bottom:1px solid var(--border); text-align:center;
+    }
+    .cta-section h2 { font-size:clamp(1.8rem,4vw,2.5rem); font-weight:800; color:#fff; margin-bottom:16px; }
+    .cta-section p { color:var(--muted); margin-bottom:40px; font-size:1rem; }
+    .cta-cards { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-bottom:48px; }
+    .cta-card {
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:24px 28px; min-width:200px; text-align:left;
+    }
+    .cta-card h4 { font-size:1rem; font-weight:700; color:#fff; margin-bottom:6px; }
+    .cta-card p { font-size:.82rem; color:var(--muted); }
+
+    footer {
+      background:var(--dark); border-top:1px solid var(--border);
+      padding:48px 40px 32px;
+      display:flex; flex-direction:column; align-items:center; gap:24px; text-align:center;
+    }
+    footer .foot-logo { font-weight:800; font-size:1.1rem; color:#fff; }
+    footer p { color:var(--muted); font-size:.82rem; }
+
+    @media(max-width:768px) {
+      nav { padding:0 20px; }
+      .nav-links { display:none; }
+      .pipeline-steps { flex-direction:column; align-items:center; }
+      .step:not(:last-child)::after { content:'↓'; right:auto; top:auto; position:static; display:block; }
+      .hero-stats { gap:28px; }
+    }
+
+    .code-block {
+      background:#0D1117; border:1px solid var(--border); border-radius:12px;
+      padding:24px; font-family:'JetBrains Mono',monospace; font-size:.82rem;
+      color:#A5D6FF; line-height:1.8; overflow-x:auto; margin-top:24px;
+    }
+    .code-block .key { color:#FF7B72; }
+    .code-block .str { color:#A5D6FF; }
+    .code-block .comment { color:#6E7681; }
+
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+    .fade-up { animation:fadeUp .6s ease forwards; }
+    .fade-up-2 { animation:fadeUp .6s .15s ease forwards; opacity:0; }
+    .fade-up-3 { animation:fadeUp .6s .3s ease forwards; opacity:0; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><div class="dot"></div>FinSight AI</div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#api">API Docs</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#stack">Stack</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <h1 class="fade-up-2">
+      Financial Document<br/>
+      <span>Intelligence Platform</span>
+    </h1>
+    <p class="fade-up-3">
+      A production-grade FastAPI system for managing, analyzing, and semantically searching financial documents — powered by RAG, vector databases, and role-based access control.
+    </p>
+    <div class="hero-btns fade-up-3">
+      <a href="#api" class="btn-primary">📄 Explore API Docs</a>
+      <a href="#team" class="btn-outline">👥 Meet the Team</a>
+    </div>
+    <div class="hero-stats fade-up-3">
+      <div class="stat"><h3>20+</h3><p>REST API Endpoints</p></div>
+      <div class="stat"><h3>4</h3><p>User Roles & RBAC</p></div>
+      <div class="stat"><h3>RAG</h3><p>Semantic Search Engine</p></div>
+      <div class="stat"><h3>5</h3><p>Expert Engineers</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-label">Core Capabilities</div>
+    <h2 class="section-title">Everything you need for<br/>Financial Document AI</h2>
+    <p class="section-sub">End-to-end system covering secure authentication, intelligent document storage, AI-powered retrieval, and fine-grained access control.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(10,132,255,.12);">🔐</div>
+        <h3>JWT Authentication</h3>
+        <p>Secure token-based authentication with refresh tokens, user registration, login endpoints, and stateless session management.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,212,170,.12);">📁</div>
+        <h3>Document Management</h3>
+        <p>Upload, retrieve, and manage financial documents — invoices, reports, contracts — with rich metadata and full CRUD operations.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,158,11,.12);">🧠</div>
+        <h3>RAG Semantic Search</h3>
+        <p>Retrieval-Augmented Generation pipeline that chunks documents, generates embeddings, stores in Qdrant, and returns the most relevant context.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(239,68,68,.12);">🎯</div>
+        <h3>Smart Reranking</h3>
+        <p>Two-stage retrieval: vector search returns Top 20 candidates, then a reranker narrows to Top 5 most financially relevant results.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(139,92,246,.12);">🛡️</div>
+        <h3>Role-Based Access Control</h3>
+        <p>Four-tier RBAC system — Admin, Analyst, Auditor, Client — with granular permission enforcement on every endpoint.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(59,130,246,.12);">⚡</div>
+        <h3>Vector Database Integration</h3>
+        <p>Native integration with Qdrant (or FAISS/Chroma) for lightning-fast similarity search over large financial document corpora.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section id="pipeline" style="background:var(--dark);">
+  <div class="container">
+    <div class="section-label">RAG Architecture</div>
+    <h2 class="section-title">Document Processing Pipeline</h2>
+    <p class="section-sub">Each uploaded document flows through an intelligent processing chain before being available for semantic retrieval.</p>
+    <div class="pipeline-steps">
+      <div class="step"><div class="step-num">1</div><h4>Upload</h4><p>Document received via POST /documents/upload</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Text Extraction</h4><p>Parse PDF/DOCX, extract raw text content</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Chunking</h4><p>Split into semantic chunks via LangChain</p></div>
+      <div class="step"><div class="step-num">4</div><h4>Embeddings</h4><p>Generate vector embeddings for each chunk</p></div>
+      <div class="step"><div class="step-num">5</div><h4>Vector Store</h4><p>Persist vectors in Qdrant with metadata</p></div>
+    </div>
+
+    <div style="margin-top:64px;">
+      <div class="section-label">Retrieval Flow</div>
+      <h2 class="section-title" style="font-size:1.8rem;">Search & Reranking Pipeline</h2>
+    </div>
+    <div class="pipeline-steps" style="margin-top:32px;">
+      <div class="step"><div class="step-num" style="background:linear-gradient(135deg,#7C3AED,#DB2777);">Q</div><h4>User Query</h4><p>POST /rag/search with query text</p></div>
+      <div class="step"><div class="step-num" style="background:linear-gradient(135deg,#7C3AED,#DB2777);">E</div><h4>Embed Query</h4><p>Convert query to dense vector</p></div>
+      <div class="step"><div class="step-num" style="background:linear-gradient(135deg,#7C3AED,#DB2777);">20</div><h4>Vector Search</h4><p>Retrieve Top 20 from Qdrant</p></div>
+      <div class="step"><div class="step-num" style="background:linear-gradient(135deg,#7C3AED,#DB2777);">↑</div><h4>Rerank</h4><p>Finance-aware reranking model</p></div>
+      <div class="step"><div class="step-num" style="background:linear-gradient(135deg,#7C3AED,#DB2777);">5</div><h4>Top Results</h4><p>Return 5 most relevant chunks</p></div>
+    </div>
+
+    <div class="code-block">
+      <span class="comment">// Sample RAG Search Request</span><br/>
+      <span class="key">POST</span> /rag/search<br/><br/>
+      {<br/>
+      &nbsp;&nbsp;<span class="key">"query"</span>: <span class="str">"financial risk related to high debt ratio"</span>,<br/>
+      &nbsp;&nbsp;<span class="key">"top_k"</span>: <span class="str">5</span>,<br/>
+      &nbsp;&nbsp;<span class="key">"rerank"</span>: <span class="str">true</span><br/>
+      }<br/><br/>
+      <span class="comment">// Response — returns most relevant financial document chunks</span><br/>
+      {<br/>
+      &nbsp;&nbsp;<span class="key">"results"</span>: [<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;{ <span class="key">"chunk_id"</span>: <span class="str">"doc_3_chunk_7"</span>, <span class="key">"score"</span>: <span class="str">0.94</span>, <span class="key">"text"</span>: <span class="str">"..."</span> },<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;{ <span class="key">"chunk_id"</span>: <span class="str">"doc_1_chunk_2"</span>, <span class="key">"score"</span>: <span class="str">0.91</span>, <span class="key">"text"</span>: <span class="str">"..."</span> }<br/>
+      &nbsp;&nbsp;]<br/>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- API DOCS -->
+<section class="api-section" id="api">
+  <div class="container">
+    <div class="section-label">API Reference</div>
+    <h2 class="section-title">Complete API Documentation</h2>
+    <p class="section-sub">All endpoints are RESTful, JWT-protected, and follow OpenAPI 3.0 specification.</p>
+    <div class="api-tabs" style="margin-top:40px;">
+      <button class="api-tab active" onclick="switchTab('auth',this)">🔐 Auth</button>
+      <button class="api-tab" onclick="switchTab('docs',this)">📄 Documents</button>
+      <button class="api-tab" onclick="switchTab('roles',this)">🛡️ Roles</button>
+      <button class="api-tab" onclick="switchTab('rag',this)">🧠 RAG</button>
+    </div>
+    <div id="auth" class="tab-content active">
+      <div class="table-wrap">
+        <table class="api-table">
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/auth/register</td><td>Register a new user account</td><td>Public</td></tr>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/auth/login</td><td>Authenticate and receive JWT token</td><td>Public</td></tr>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/auth/refresh</td><td>Refresh expired JWT access token</td><td>JWT</td></tr>
+            <tr><td><span class="method get">GET</span></td><td class="endpoint">/auth/me</td><td>Get current authenticated user profile</td><td>JWT</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="docs" class="tab-content">
+      <div class="table-wrap">
+        <table class="api-table">
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/documents/upload</td><td>Upload a financial document with metadata</td><td>Analyst, Admin</td></tr>
+            <tr><td><span class="method get">GET</span></td><td class="endpoint">/documents</td><td>Retrieve all documents (paginated)</td><td>All Roles</td></tr>
+            <tr><td><span class="method get">GET</span></td><td class="endpoint">/documents/{id}</td><td>Retrieve document details by ID</td><td>All Roles</td></tr>
+            <tr><td><span class="method delete">DELETE</span></td><td class="endpoint">/documents/{id}</td><td>Delete a document</td><td>Admin</td></tr>
+            <tr><td><span class="method get">GET</span></td><td class="endpoint">/documents/search</td><td>Search documents by metadata fields</td><td>All Roles</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="roles" class="tab-content">
+      <div class="table-wrap">
+        <table class="api-table">
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/roles/create</td><td>Create a new role definition</td><td>Admin</td></tr>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/users/assign-role</td><td>Assign a role to a user</td><td>Admin</td></tr>
+            <tr><td><span class="method get">GET</span></td><td class="endpoint">/users/{id}/roles</td><td>Get all roles assigned to a user</td><td>Admin</td></tr>
+            <tr><td><span class="method get">GET</span></td><td class="endpoint">/users/{id}/permissions</td><td>View user's effective permissions</td><td>Admin</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="rag" class="tab-content">
+      <div class="table-wrap">
+        <table class="api-table">
+          <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr></thead>
+          <tbody>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/rag/index-document</td><td>Generate embeddings and store in vector DB</td><td>Analyst, Admin</td></tr>
+            <tr><td><span class="method delete">DELETE</span></td><td class="endpoint">/rag/remove-document/{id}</td><td>Remove document embeddings from vector DB</td><td>Admin</td></tr>
+            <tr><td><span class="method post">POST</span></td><td class="endpoint">/rag/search</td><td>Perform semantic search with reranking</td><td>All Roles</td></tr>
+            <tr><td><span class="method get">GET</span></td><td class="endpoint">/rag/context/{id}</td><td>Retrieve related document context chunks</td><td>All Roles</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section style="background:var(--dark);">
+  <div class="container">
+    <div class="section-label">Access Control</div>
+    <h2 class="section-title">Role-Based Permissions</h2>
+    <p class="section-sub">Four distinct roles with carefully scoped permissions ensure secure, auditable access to financial documents.</p>
+    <div class="roles-grid">
+      <div class="role-card admin">
+        <h4>Admin</h4><span class="role-badge">👑 Full Access</span>
+        <ul class="perm-list">
+          <li><span class="check">✓</span> Manage all users & roles</li>
+          <li><span class="check">✓</span> Upload & delete documents</li>
+          <li><span class="check">✓</span> Access all RAG endpoints</li>
+          <li><span class="check">✓</span> View audit logs</li>
+          <li><span class="check">✓</span> Configure system settings</li>
+        </ul>
+      </div>
+      <div class="role-card analyst">
+        <h4>Financial Analyst</h4><span class="role-badge">📊 Analyst</span>
+        <ul class="perm-list">
+          <li><span class="check">✓</span> Upload documents</li>
+          <li><span class="check">✓</span> Edit own documents</li>
+          <li><span class="check">✓</span> Perform semantic search</li>
+          <li><span class="check">✓</span> View all documents</li>
+          <li><span class="cross">✗</span> Delete documents</li>
+        </ul>
+      </div>
+      <div class="role-card auditor">
+        <h4>Auditor</h4><span class="role-badge">🔍 Review Only</span>
+        <ul class="perm-list">
+          <li><span class="check">✓</span> View all documents</li>
+          <li><span class="check">✓</span> Search & retrieve context</li>
+          <li><span class="check">✓</span> View document metadata</li>
+          <li><span class="cross">✗</span> Upload documents</li>
+          <li><span class="cross">✗</span> Modify any data</li>
+        </ul>
+      </div>
+      <div class="role-card client">
+        <h4>Client</h4><span class="role-badge">👤 View Only</span>
+        <ul class="perm-list">
+          <li><span class="check">✓</span> View company documents</li>
+          <li><span class="check">✓</span> Basic semantic search</li>
+          <li><span class="cross">✗</span> Upload documents</li>
+          <li><span class="cross">✗</span> Edit or delete</li>
+          <li><span class="cross">✗</span> Admin operations</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="tech" id="stack">
+  <div class="container">
+    <div class="section-label">Technology Stack</div>
+    <h2 class="section-title">Built with Modern AI Stack</h2>
+    <p class="section-sub">Carefully chosen technologies for performance, scalability, and developer experience.</p>
+    <div class="tech-grid">
+      <div class="tech-card"><div class="tech-icon">⚡</div><h4>FastAPI</h4><p>High-performance async Python web framework</p></div>
+      <div class="tech-card"><div class="tech-icon">🔗</div><h4>LangChain</h4><p>Document loaders, chunkers & LLM orchestration</p></div>
+      <div class="tech-card"><div class="tech-icon">🗃️</div><h4>Qdrant</h4><p>Vector database for embeddings storage & search</p></div>
+      <div class="tech-card"><div class="tech-icon">🐘</div><h4>PostgreSQL</h4><p>Relational DB for users, roles & document metadata</p></div>
+      <div class="tech-card"><div class="tech-icon">🧬</div><h4>Embeddings</h4><p>Finance-specialized text embedding models</p></div>
+      <div class="tech-card"><div class="tech-icon">🔑</div><h4>JWT / OAuth2</h4><p>Stateless authentication & token management</p></div>
+      <div class="tech-card"><div class="tech-icon">🎯</div><h4>Reranker</h4><p>Cross-encoder reranking for precision retrieval</p></div>
+      <div class="tech-card"><div class="tech-icon">🐳</div><h4>Docker</h4><p>Containerized deployment & service orchestration</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section style="background:var(--dark);" id="team">
+  <div class="container">
+    <div class="section-label">Our Expert Team</div>
+    <h2 class="section-title">5 Engineers. One System.</h2>
+    <p class="section-sub">Each expert owns a critical module — ensuring deep specialization and clean separation of concerns.</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="avatar">AK</div>
+        <h3>Arjun Kumar</h3>
+        <div class="team-role">Lead Backend Engineer</div>
+        <p>Designed the FastAPI architecture, database schema, and core document management CRUD APIs with pagination and filtering.</p>
+        <div class="skills-list">
+          <span class="skill-tag">FastAPI</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">SQLAlchemy</span><span class="skill-tag">Docker</span>
+        </div>
+        <div class="contrib-bar"><div class="contrib-fill" style="width:95%"></div></div>
+      </div>
+      <div class="team-card">
+        <div class="avatar" style="background:linear-gradient(135deg,#7C3AED,#DB2777);">SP</div>
+        <h3>Sneha Patel</h3>
+        <div class="team-role">AI / RAG Engineer</div>
+        <p>Built the complete RAG pipeline — text extraction, LangChain chunking, embedding generation, Qdrant indexing, and semantic search API.</p>
+        <div class="skills-list">
+          <span class="skill-tag">LangChain</span><span class="skill-tag">Qdrant</span><span class="skill-tag">Embeddings</span><span class="skill-tag">RAG</span>
+        </div>
+        <div class="contrib-bar"><div class="contrib-fill" style="width:98%;background:linear-gradient(90deg,#7C3AED,#DB2777)"></div></div>
+      </div>
+      <div class="team-card">
+        <div class="avatar" style="background:linear-gradient(135deg,#059669,#0D9488);">RN</div>
+        <h3>Rahul Naik</h3>
+        <div class="team-role">Security & Auth Engineer</div>
+        <p>Implemented JWT authentication, refresh token rotation, RBAC middleware, and all role/permission management endpoints.</p>
+        <div class="skills-list">
+          <span class="skill-tag">JWT</span><span class="skill-tag">OAuth2</span><span class="skill-tag">RBAC</span><span class="skill-tag">Python</span>
+        </div>
+        <div class="contrib-bar"><div class="contrib-fill" style="width:90%;background:linear-gradient(90deg,#059669,#0D9488)"></div></div>
+      </div>
+      <div class="team-card">
+        <div class="avatar" style="background:linear-gradient(135deg,#D97706,#DC2626);">PM</div>
+        <h3>Priya Mehta</h3>
+        <div class="team-role">ML & Reranking Specialist</div>
+        <p>Integrated two-stage retrieval with cross-encoder reranking, fine-tuned embedding models for financial text, and optimized retrieval quality.</p>
+        <div class="skills-list">
+          <span class="skill-tag">Reranking</span><span class="skill-tag">HuggingFace</span><span class="skill-tag">FAISS</span><span class="skill-tag">ML</span>
+        </div>
+        <div class="contrib-bar"><div class="contrib-fill" style="width:92%;background:linear-gradient(90deg,#D97706,#DC2626)"></div></div>
+      </div>
+      <div class="team-card">
+        <div class="avatar" style="background:linear-gradient(135deg,#0284C7,#6D28D9);">VS</div>
+        <h3>Vikram Sharma</h3>
+        <div class="team-role">DevOps & Integration Lead</div>
+        <p>Set up Docker Compose, CI/CD pipeline, API testing suite, Swagger docs, and integrated all modules into a cohesive deployable system.</p>
+        <div class="skills-list">
+          <span class="skill-tag">Docker</span><span class="skill-tag">CI/CD</span><span class="skill-tag">Pytest</span><span class="skill-tag">OpenAPI</span>
+        </div>
+        <div class="contrib-bar"><div class="contrib-fill" style="width:88%;background:linear-gradient(90deg,#0284C7,#6D28D9)"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2>Ready to Explore the Full System?</h2>
+    <p>All source code, API docs, and deployment instructions are available in the project repository.</p>
+    <div class="cta-cards">
+      <div class="cta-card"><h4>📄 Document Metadata</h4><p>document_id, title, company_name, document_type, uploaded_by, created_at</p></div>
+      <div class="cta-card"><h4>🔍 Doc Types Supported</h4><p>Invoices · Financial Reports · Contracts · Agreements</p></div>
+      <div class="cta-card"><h4>🗄️ Vector DBs Supported</h4><p>Qdrant · FAISS · Chroma — plug-and-play adapters</p></div>
+    </div>
+    <a href="#api" class="btn-primary">Explore the API →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">⚡ FinSight AI</div>
+  <p>FastAPI + LangChain + Qdrant + PostgreSQL</p>
+  <p style="color:#444;">5-Engineer Team Project · Role-Based Document Intelligence Platform</p>
+</footer>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.api-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
